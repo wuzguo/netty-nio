@@ -1,6 +1,7 @@
 package com.sunvalley.io.netty;
 
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 
 /**
@@ -15,6 +16,8 @@ public class ServerChannelInitializer extends ChannelInitializer<SocketChannel> 
 
     @Override
     protected void initChannel(SocketChannel socketChannel) throws Exception {
-        socketChannel.pipeline().addLast("serverChannelHandler", new ServerChannelInboundHandler());
+        ChannelPipeline pipeline = socketChannel.pipeline();
+        pipeline.addLast("channelInboundHandler", new ServerChannelInboundHandler());
+        pipeline.addFirst("channelOutboundHandler", new ServerChannelOutboundHandler());
     }
 }
