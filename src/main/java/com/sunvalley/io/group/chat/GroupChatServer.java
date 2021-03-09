@@ -5,6 +5,8 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 
 /**
  * <B>说明：</B><BR>
@@ -24,7 +26,7 @@ public class GroupChatServer {
             ServerBootstrap serverBootstrap = new ServerBootstrap();
             serverBootstrap.group(bossGroup, workerGroup).option(ChannelOption.SO_BACKLOG, 128)
                 .childOption(ChannelOption.SO_KEEPALIVE, true).childHandler(new ChatServerChannelInitializer())
-                .channel(NioServerSocketChannel.class);
+                .channel(NioServerSocketChannel.class).handler(new LoggingHandler(LogLevel.DEBUG));
             ChannelFuture channelFuture = serverBootstrap.bind(6668).sync();
             channelFuture.addListener(future -> {
                 if (future.isSuccess()) {

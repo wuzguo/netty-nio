@@ -5,6 +5,8 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
+import io.netty.handler.timeout.IdleStateHandler;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <B>说明：</B><BR>
@@ -22,5 +24,7 @@ public class ChatServerChannelInitializer extends ChannelInitializer<SocketChann
         pipeline.addLast("decoder", new StringDecoder());
         pipeline.addLast("encoder", new StringEncoder());
         pipeline.addLast("chatChannelInboundHandler", new ChatServerChannelInboundHandler());
+        pipeline.addLast("idleStateHandler", new IdleStateHandler(2, 5, 10, TimeUnit.MINUTES));
+        pipeline.addLast("idleStateEventHandler", new IdleStateEventHandler());
     }
 }
