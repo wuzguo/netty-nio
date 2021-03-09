@@ -57,11 +57,6 @@ public class ClientChannelInboundHandler extends ChannelInboundHandlerAdapter {
         System.out.println("6. channel unregistered ...");
     }
 
-//    @Override
-//    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-//        System.out.println("3. channel active ... " + ctx.name());
-//    }
-
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);

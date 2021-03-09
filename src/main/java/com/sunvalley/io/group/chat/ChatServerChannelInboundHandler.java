@@ -19,7 +19,6 @@ public class ChatServerChannelInboundHandler extends SimpleChannelInboundHandler
 
     private static final ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
-
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
         Channel channel = ctx.channel();
