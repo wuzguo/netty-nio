@@ -23,13 +23,13 @@ public class NettyServer {
 
         try {
             ServerBootstrap serverBootstrap = new ServerBootstrap();
-            serverBootstrap.group(bossGroup, workerGroup).option(ChannelOption.SO_BACKLOG, 128)
+            serverBootstrap.group(bossGroup).option(ChannelOption.SO_BACKLOG, 128)
                 .childOption(ChannelOption.SO_KEEPALIVE, true).childHandler(new ServerChannelInitializer())
                 .channel(NioServerSocketChannel.class);
-            ChannelFuture channelFuture = serverBootstrap.bind(6669).sync();
+            ChannelFuture channelFuture = serverBootstrap.bind(6670).sync();
             channelFuture.addListener(future -> {
                 if (future.isSuccess()) {
-                    System.out.println("绑定端口 6669 成功");
+                    System.out.println("绑定端口 6670 成功");
                 }
             });
             channelFuture.channel().closeFuture().sync();

@@ -19,5 +19,6 @@ public class ServerChannelInitializer extends ChannelInitializer<SocketChannel> 
         ChannelPipeline pipeline = socketChannel.pipeline();
         pipeline.addLast("channelInboundHandler", new ServerChannelInboundHandler());
         pipeline.addFirst("channelOutboundHandler", new ServerChannelOutboundHandler());
+        pipeline.addLast("exceptionHandler", new ExceptionHandler());
     }
 }

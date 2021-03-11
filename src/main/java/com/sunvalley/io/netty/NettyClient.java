@@ -24,7 +24,7 @@ public class NettyClient {
             Bootstrap bootstrap = new Bootstrap();
             bootstrap.group(eventLoopGroup).channel(NioSocketChannel.class).handler(new ClientChannelInitializer());
 
-            ChannelFuture channelFuture = bootstrap.connect(new InetSocketAddress("127.0.0.1", 6669)).sync();
+            ChannelFuture channelFuture = bootstrap.connect(new InetSocketAddress("127.0.0.1", 6670)).sync();
             channelFuture.addListener(future -> {
                 if (future.isSuccess()) {
                     System.out.println("连接服务器端口 6669 成功");

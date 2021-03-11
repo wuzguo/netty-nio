@@ -1,8 +1,8 @@
 package com.sunvalley.io.http;
 
-import com.sunvalley.io.netty.ServerChannelInitializer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
@@ -24,7 +24,7 @@ public class HttpServer {
         try {
             ServerBootstrap serverBootstrap = new ServerBootstrap();
             serverBootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
-                .childHandler(new HttpChannelInitializer());
+                .childHandler(new HttpChannelInitializer()).childOption(ChannelOption.SO_KEEPALIVE, true);
             ChannelFuture channelFuture = serverBootstrap.bind(8800).sync();
             channelFuture.addListener(future -> {
                 if (future.isSuccess()) {
