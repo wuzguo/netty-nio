@@ -1,4 +1,4 @@
-package com.sunvalley.io.p2p.chat;
+package com.sunvalley.io.p2p.chat.utils;
 
 import com.google.common.collect.Maps;
 import io.netty.channel.Channel;

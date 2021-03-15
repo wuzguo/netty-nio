@@ -1,4 +1,4 @@
-package com.sunvalley.io.p2p.chat;
+package com.sunvalley.io.p2p.chat.auth;
 
 import com.sunvalley.io.netty.ExceptionHandler;
 import com.sunvalley.io.p2p.chat.codec.PacketDecoder;
@@ -12,10 +12,10 @@ import io.netty.channel.socket.SocketChannel;
  *
  * @author zak.wu
  * @version 1.0.0
- * @date 2021/3/15 9:46
+ * @date 2021/3/15 9:45
  */
 
-public class GateWayServerChannelInitializer extends ChannelInitializer<SocketChannel> {
+public class AuthClientChannelInitializer extends ChannelInitializer<SocketChannel> {
 
     @Override
     protected void initChannel(SocketChannel ch) throws Exception {
@@ -23,6 +23,6 @@ public class GateWayServerChannelInitializer extends ChannelInitializer<SocketCh
         pipeline.addLast("decoder", new PacketDecoder());
         pipeline.addLast("encoder", new PacketEncoder());
         pipeline.addLast("exceptionHandler", new ExceptionHandler());
-        pipeline.addLast("gatewayServerHandler", new GateWayServerInboundHandler());
+        pipeline.addLast("authClientHandler", new AuthClientInboundHandler());
     }
 }

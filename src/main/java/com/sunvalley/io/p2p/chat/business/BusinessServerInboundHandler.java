@@ -15,7 +15,7 @@ import lombok.NonNull;
  * @date 2021/3/9 11:50
  */
 
-public class ServerMessageHandler extends SimpleChannelInboundHandler<String> {
+public class BusinessServerInboundHandler extends SimpleChannelInboundHandler<String> {
 
 
     @Override

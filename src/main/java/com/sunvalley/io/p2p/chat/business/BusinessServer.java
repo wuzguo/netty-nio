@@ -1,4 +1,4 @@
-package com.sunvalley.io.p2p.chat.auth;
+package com.sunvalley.io.p2p.chat.business;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -13,10 +13,10 @@ import io.netty.handler.logging.LoggingHandler;
  *
  * @author zak.wu
  * @version 1.0.0
- * @date 2021/3/15 9:33
+ * @date 2021/3/9 11:46
  */
 
-public class P2PAuthServer {
+public class BusinessServer {
 
     public static void main(String[] args) {
         NioEventLoopGroup bossGroup = new NioEventLoopGroup(1);
@@ -25,12 +25,12 @@ public class P2PAuthServer {
         try {
             ServerBootstrap serverBootstrap = new ServerBootstrap();
             serverBootstrap.group(bossGroup, workerGroup).option(ChannelOption.SO_BACKLOG, 128)
-                .childOption(ChannelOption.SO_KEEPALIVE, true).childHandler(new P2PAuthServerChannelInitializer())
+                .childOption(ChannelOption.SO_KEEPALIVE, true).childHandler(new BusinessServerChannelInitializer())
                 .channel(NioServerSocketChannel.class).handler(new LoggingHandler(LogLevel.DEBUG));
-            ChannelFuture channelFuture = serverBootstrap.bind(6670).sync();
+            ChannelFuture channelFuture = serverBootstrap.bind(6668).sync();
             channelFuture.addListener(future -> {
                 if (future.isSuccess()) {
-                    System.out.println("绑定端口 6670 成功");
+                    System.out.println("绑定端口 6668 成功");
                 }
             });
             channelFuture.channel().closeFuture().sync();

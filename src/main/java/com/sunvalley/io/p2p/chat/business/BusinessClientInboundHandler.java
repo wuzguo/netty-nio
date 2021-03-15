@@ -11,7 +11,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
  * @date 2021/3/9 11:50
  */
 
-public class P2PClientChannelInboundHandler extends SimpleChannelInboundHandler<String> {
+public class BusinessClientInboundHandler extends SimpleChannelInboundHandler<String> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {

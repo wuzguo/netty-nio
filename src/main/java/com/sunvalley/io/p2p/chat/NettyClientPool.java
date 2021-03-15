@@ -1,11 +1,13 @@
 package com.sunvalley.io.p2p.chat;
 
-import com.sunvalley.io.p2p.chat.auth.P2PAuthClientHandler;
-import com.sunvalley.io.p2p.chat.codec.GatewayPacketDecoder;
-import com.sunvalley.io.p2p.chat.codec.GatewayPacketEncoder;
+import com.google.common.collect.Maps;
+import com.sunvalley.io.netty.ExceptionHandler;
+import com.sunvalley.io.p2p.chat.codec.PacketDecoder;
+import com.sunvalley.io.p2p.chat.codec.PacketEncoder;
 import com.sunvalley.io.p2p.chat.entity.BaseMessage;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.pool.AbstractChannelPoolMap;
@@ -15,6 +17,9 @@ import io.netty.channel.pool.FixedChannelPool;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.FutureListener;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
@@ -32,16 +37,47 @@ public class NettyClientPool {
      */
     private static ChannelPoolMap<String, FixedChannelPool> mapChannelPools;
 
+    private static Bootstrap bootstrap = new Bootstrap();
+
+    static {
+        bootstrap.group(new NioEventLoopGroup()).channel(NioSocketChannel.class);
+    }
+
     /**
      * 构造函数
      *
-     * @param hostName 主机名称
-     * @param port     端口
+     * @param hostName        主机名称
+     * @param port            端口
+     * @param channelHandlers Handler
      */
-    public NettyClientPool(String hostName, Integer port) {
-        Bootstrap bootstrap = new Bootstrap();
-        bootstrap.group(new NioEventLoopGroup()).channel(NioSocketChannel.class).remoteAddress(hostName, port);
-        create(bootstrap);
+    public NettyClientPool(String hostName, Integer port, List<ChannelHandler> channelHandlers) {
+        Map<String, ChannelHandler> mapHandler = Maps.newHashMap();
+        channelHandlers.forEach(channelHandler -> mapHandler.put(channelHandler.getClass().getName(), channelHandler));
+        create(hostName, port, mapHandler);
+    }
+
+    /**
+     * 构造函数
+     *
+     * @param hostName   主机名称
+     * @param port       端口
+     * @param mapHandler Handler
+     */
+    public NettyClientPool(String hostName, Integer port, Map<String, ChannelHandler> mapHandler) {
+        create(hostName, port, mapHandler);
+    }
+
+    public void create(String hostName, Integer port, Map<String, ChannelHandler> mapHandler) {
+
+        bootstrap.remoteAddress(hostName, port);
+
+        Map<String, ChannelHandler> mapChannelHandler = Maps.newHashMap();
+        mapChannelHandler.put("decoder", new PacketDecoder());
+        mapChannelHandler.put("encoder", new PacketEncoder());
+        mapChannelHandler.put("exceptionHandler", new ExceptionHandler());
+        Optional.ofNullable(mapHandler)
+            .ifPresent(channelHandlerMap -> channelHandlerMap.forEach(mapChannelHandler::put));
+        create0(bootstrap, mapChannelHandler);
     }
 
     /**
@@ -49,7 +85,7 @@ public class NettyClientPool {
      *
      * @param bootstrap {@link Bootstrap}
      */
-    private void create(@NonNull Bootstrap bootstrap) {
+    private void create0(@NonNull Bootstrap bootstrap, Map<String, ChannelHandler> mapChannelHandler) {
         mapChannelPools = new AbstractChannelPoolMap<String, FixedChannelPool>() {
             @Override
             protected FixedChannelPool newPool(String key) {
@@ -61,7 +97,6 @@ public class NettyClientPool {
                     @Override
                     public void channelReleased(Channel ch) throws Exception {
                         // 刷新管道里的数据
-                        // ch.writeAndFlush(Unpooled.EMPTY_BUFFER);
                         System.out.println("channel released ......");
                     }
 
@@ -72,9 +107,8 @@ public class NettyClientPool {
                     @Override
                     public void channelCreated(Channel ch) throws Exception {
                         ChannelPipeline pipeline = ch.pipeline();
-                        pipeline.addLast("decoder", new GatewayPacketDecoder());
-                        pipeline.addLast("encoder", new GatewayPacketEncoder());
-                        pipeline.addLast("authClientHandler", new P2PAuthClientHandler());
+                        Optional.ofNullable(mapChannelHandler)
+                            .ifPresent(channelHandlerMap -> channelHandlerMap.forEach((pipeline::addLast)));
                     }
 
                     /**

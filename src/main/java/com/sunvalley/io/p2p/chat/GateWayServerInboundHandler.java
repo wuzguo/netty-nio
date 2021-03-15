@@ -1,8 +1,10 @@
 package com.sunvalley.io.p2p.chat;
 
+import com.sunvalley.io.p2p.chat.auth.AuthClient;
+import com.sunvalley.io.p2p.chat.business.BusinessClient;
 import com.sunvalley.io.p2p.chat.entity.BaseMessage;
-import com.sunvalley.io.p2p.chat.entity.ResultMessage;
 import com.sunvalley.io.p2p.chat.enums.TypeEnum;
+import com.sunvalley.io.p2p.chat.utils.ChannelUtils;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
@@ -14,20 +16,19 @@ import io.netty.channel.SimpleChannelInboundHandler;
  * @date 2021/3/9 16:29
  */
 
-public class GateWayServerHandler extends SimpleChannelInboundHandler<BaseMessage> {
+public class GateWayServerInboundHandler extends SimpleChannelInboundHandler<BaseMessage> {
 
     // 认证客户端
-    private static final NettyClientPool authClientPool = new NettyClientPool("127.0.0.1", 6670);
+    private static final NettyClientPool authClientPool = AuthClient.getClientPool();
 
     // 业务客户端
-    private static final NettyClientPool businessClientPool = new NettyClientPool("127.0.0.1", 6670);
+    private static final NettyClientPool businessClientPool = BusinessClient.getClientPool();
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, BaseMessage message) throws Exception {
         System.out.println(message);
         if (message.getType().equals(TypeEnum.RESULT.getValue())) {
-            ResultMessage resultMessage = (ResultMessage) message.getMessage();
-            ChannelUtils.getChannel(resultMessage.getId()).writeAndFlush(resultMessage.getMessage());
+            ChannelUtils.getChannel(message.getId()).writeAndFlush(message);
         } else if (message.getType().equals(TypeEnum.BUSINESS.getValue())) {
             ChannelUtils.addChannel(message.getId(), ctx.channel());
             businessClientPool.sendMessage(message);

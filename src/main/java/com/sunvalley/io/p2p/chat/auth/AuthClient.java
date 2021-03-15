@@ -1,13 +1,17 @@
 package com.sunvalley.io.p2p.chat.auth;
 
+import com.google.common.collect.Maps;
 import com.sunvalley.io.p2p.chat.GateWayClientChannelInitializer;
+import com.sunvalley.io.p2p.chat.NettyClientPool;
 import com.sunvalley.io.p2p.chat.utils.MessageUtils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import java.net.InetSocketAddress;
+import java.util.Map;
 import java.util.Scanner;
 
 /**
@@ -18,7 +22,7 @@ import java.util.Scanner;
  * @date 2021/3/15 9:33
  */
 
-public class P2PAuthClient {
+public class AuthClient {
 
     public static void main(String[] args) throws InterruptedException {
         NioEventLoopGroup loopGroup = new NioEventLoopGroup(8);
@@ -40,5 +44,11 @@ public class P2PAuthClient {
         } finally {
             loopGroup.shutdownGracefully();
         }
+    }
+
+    public static NettyClientPool getClientPool() {
+        Map<String, ChannelHandler> mapChannelHandler = Maps.newHashMap();
+        mapChannelHandler.put("authClientHandler", new AuthClientInboundHandler());
+        return new NettyClientPool("127.0.0.1", 6670, mapChannelHandler);
     }
 }

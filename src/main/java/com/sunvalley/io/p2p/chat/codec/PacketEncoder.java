@@ -15,7 +15,7 @@ import io.netty.handler.codec.MessageToByteEncoder;
  * @date 2021/3/15 11:23
  */
 
-public class GatewayPacketEncoder extends MessageToByteEncoder<BaseMessage> {
+public class PacketEncoder extends MessageToByteEncoder<BaseMessage> {
 
     @Override
     protected void encode(ChannelHandlerContext ctx, BaseMessage message, ByteBuf out) throws Exception {

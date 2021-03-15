@@ -23,6 +23,7 @@ public class MessageUtils {
      * @return {@link BaseMessage}
      */
     public static BaseMessage to(@NonNull String content) {
-        return BaseMessage.builder().id(UUIDUtils.getId()).message(content).type(TypeEnum.AUTH.getValue()).build();
+        return BaseMessage.builder().id(UUIDUtils.getId()).message(content.trim()).type(TypeEnum.AUTH.getValue())
+            .build();
     }
 }

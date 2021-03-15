@@ -16,7 +16,7 @@ import java.util.List;
  * @date 2021/3/15 11:22
  */
 
-public class GatewayPacketDecoder extends ByteToMessageDecoder {
+public class PacketDecoder extends ByteToMessageDecoder {
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {

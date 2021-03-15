@@ -14,7 +14,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
  * @date 2021/3/9 16:29
  */
 
-public class P2PAuthServerHandler extends SimpleChannelInboundHandler<BaseMessage> {
+public class AuthServerInboundHandler extends SimpleChannelInboundHandler<BaseMessage> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, BaseMessage message) throws Exception {
