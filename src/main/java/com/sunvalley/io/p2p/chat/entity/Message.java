@@ -14,17 +14,12 @@ import lombok.Data;
 public class Message {
 
     /**
-     * 接收接收用户ID
+     * 1: 认证；2 业务消息
      */
-    private Integer to;
-
-    /**
-     * 发送用户ID
-     */
-    private Integer from;
+    private Integer type;
 
     /**
      * 消息体
      */
-    private Object msg;
+    private BaseMessage msg;
 }

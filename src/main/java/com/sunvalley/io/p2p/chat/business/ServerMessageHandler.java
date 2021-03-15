@@ -1,4 +1,4 @@
-package com.sunvalley.io.p2p.chat;
+package com.sunvalley.io.p2p.chat.business;
 
 import com.sunvalley.io.p2p.chat.utils.UserManager;
 import io.netty.channel.Channel;

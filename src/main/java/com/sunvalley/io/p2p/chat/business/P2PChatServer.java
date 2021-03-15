@@ -1,4 +1,4 @@
-package com.sunvalley.io.p2p.chat;
+package com.sunvalley.io.p2p.chat.business;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;

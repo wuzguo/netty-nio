@@ -1,4 +1,4 @@
-package com.sunvalley.io.p2p.chat;
+package com.sunvalley.io.p2p.chat.business;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;

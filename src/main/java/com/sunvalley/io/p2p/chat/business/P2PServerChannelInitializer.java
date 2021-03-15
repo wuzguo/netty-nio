@@ -1,5 +1,6 @@
-package com.sunvalley.io.p2p.chat;
+package com.sunvalley.io.p2p.chat.business;
 
+import com.sunvalley.io.p2p.chat.GateWayServerHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -23,7 +24,7 @@ public class P2PServerChannelInitializer extends ChannelInitializer<SocketChanne
         ChannelPipeline pipeline = ch.pipeline();
         pipeline.addLast("decoder", new StringDecoder());
         pipeline.addLast("encoder", new StringEncoder());
-        pipeline.addLast("serverAuthHandler", new ServerAuthHandler());
+        pipeline.addLast("serverAuthHandler", new GateWayServerHandler());
         pipeline.addLast("serverMessageHandler", new ServerMessageHandler());
         pipeline.addLast("idleStateHandler", new IdleStateHandler(2, 5, 10, TimeUnit.MINUTES));
         pipeline.addLast("idleStateEventHandler", new IdleStateEventHandler());
