@@ -22,7 +22,6 @@ public class AuthClientInboundHandler extends SimpleChannelInboundHandler<Messag
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Message message) throws Exception {
-        System.out.println("auth: " + message.toString());
         message.setType(TypeEnum.RESULT.getValue());
         gateClientPool.sendMessage(message);
     }

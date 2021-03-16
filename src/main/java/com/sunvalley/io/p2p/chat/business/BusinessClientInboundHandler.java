@@ -22,7 +22,6 @@ public class BusinessClientInboundHandler extends SimpleChannelInboundHandler<Me
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Message message) throws Exception {
-        System.out.println("business client message: " + message);
         message.setType(TypeEnum.RESULT.getValue());
         gateClientPool.sendMessage(message);
     }
