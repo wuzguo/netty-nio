@@ -24,12 +24,31 @@ import lombok.Data;
 @Data
 public class GateWayClient {
 
-    public static void main(String[] args) throws InterruptedException {
+    /**
+     * 主机名称
+     */
+    private String hostName;
+
+    /**
+     * 端口
+     */
+    private Integer port;
+
+
+    public GateWayClient(String hostName, Integer port) {
+        this.hostName = hostName;
+        this.port = port;
+    }
+
+    /**
+     * 初始化
+     */
+    public void initialize() throws InterruptedException {
         NioEventLoopGroup loopGroup = new NioEventLoopGroup(8);
         Bootstrap bootstrap = new Bootstrap();
         try {
             bootstrap.group(loopGroup).channel(NioSocketChannel.class).handler(new GateWayClientChannelInitializer());
-            ChannelFuture channelFuture = bootstrap.connect(new InetSocketAddress("127.0.0.1", 6666)).sync();
+            ChannelFuture channelFuture = bootstrap.connect(new InetSocketAddress(this.hostName, this.port)).sync();
             channelFuture.addListener(future -> {
                 if (future.isSuccess()) {
                     System.out.println("连接服务器端口 6666 成功");
@@ -46,7 +65,11 @@ public class GateWayClient {
         }
     }
 
-    public static NettyClientPool getClientPool() {
+    public static void main(String[] args) throws InterruptedException {
+        new GateWayClient("127.0.0.1", 6666).initialize();
+    }
+
+    public static NettyClientPool getPool() {
         List<ChannelHandler> channelHandlers = Lists.newArrayList();
         channelHandlers.add(new GateWayClientInboundHandler());
         return new NettyClientPool("127.0.0.1", 6666, channelHandlers);

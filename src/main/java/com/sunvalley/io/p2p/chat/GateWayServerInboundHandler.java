@@ -22,7 +22,7 @@ public class GateWayServerInboundHandler extends SimpleChannelInboundHandler<Bas
     private static final NettyClientPool authClientPool = AuthClient.getPool();
 
     // 业务客户端
-    private static final NettyClientPool businessClientPool = BusinessClient.getClientPool();
+    private static final NettyClientPool businessClientPool = BusinessClient.getPool();
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, BaseMessage message) throws Exception {

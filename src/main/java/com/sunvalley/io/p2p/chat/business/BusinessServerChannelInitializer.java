@@ -28,6 +28,6 @@ public class BusinessServerChannelInitializer extends ChannelInitializer<SocketC
         pipeline.addLast("decoder", new PacketDecoder());
         pipeline.addLast("encoder", new PacketEncoder());
         pipeline.addLast("exceptionHandler", new ExceptionHandler());
-        pipeline.addLast("serverMessageHandler", new BusinessServerInboundHandler());
+        pipeline.addLast("businessInboundHandler", new BusinessServerInboundHandler());
     }
 }

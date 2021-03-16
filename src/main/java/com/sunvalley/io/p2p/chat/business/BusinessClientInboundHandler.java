@@ -18,7 +18,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 public class BusinessClientInboundHandler extends SimpleChannelInboundHandler<BaseMessage> {
 
     // 认证客户端
-    private static final NettyClientPool gateClientPool = GateWayClient.getClientPool();
+    private static final NettyClientPool gateClientPool = GateWayClient.getPool();
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, BaseMessage message) throws Exception {
