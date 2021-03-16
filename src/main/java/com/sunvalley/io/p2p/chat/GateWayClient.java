@@ -1,6 +1,6 @@
 package com.sunvalley.io.p2p.chat;
 
-import com.google.common.collect.Maps;
+import com.google.common.collect.Lists;
 import com.sunvalley.io.p2p.chat.utils.MessageUtils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -9,7 +9,7 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import java.net.InetSocketAddress;
-import java.util.Map;
+import java.util.List;
 import java.util.Scanner;
 import lombok.Data;
 
@@ -47,8 +47,8 @@ public class GateWayClient {
     }
 
     public static NettyClientPool getClientPool() {
-        Map<String, ChannelHandler> mapChannelHandler = Maps.newHashMap();
-        mapChannelHandler.put("gateWayInboundHandler", new GateWayClientInboundHandler());
-        return new NettyClientPool("127.0.0.1", 6666, mapChannelHandler);
+        List<ChannelHandler> channelHandlers = Lists.newArrayList();
+        channelHandlers.add(new GateWayClientInboundHandler());
+        return new NettyClientPool("127.0.0.1", 6666, channelHandlers);
     }
 }

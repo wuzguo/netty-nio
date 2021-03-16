@@ -1,6 +1,6 @@
 package com.sunvalley.io.p2p.chat;
 
-import com.google.common.collect.Maps;
+import com.google.common.collect.Lists;
 import com.sunvalley.io.netty.ExceptionHandler;
 import com.sunvalley.io.p2p.chat.codec.PacketDecoder;
 import com.sunvalley.io.p2p.chat.codec.PacketEncoder;
@@ -15,10 +15,10 @@ import io.netty.channel.pool.ChannelPoolHandler;
 import io.netty.channel.pool.ChannelPoolMap;
 import io.netty.channel.pool.FixedChannelPool;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.FutureListener;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -35,49 +35,46 @@ public class NettyClientPool {
     /**
      * key为目标host，value为目标host的连接池
      */
-    private static ChannelPoolMap<String, FixedChannelPool> mapChannelPools;
+    private ChannelPoolMap<String, FixedChannelPool> mapChannelPools;
 
-    private static Bootstrap bootstrap = new Bootstrap();
+    /**
+     * 主机名称
+     */
+    private String hostName;
 
-    static {
-        bootstrap.group(new NioEventLoopGroup()).channel(NioSocketChannel.class);
+    /**
+     * 端口
+     */
+    private Integer port;
+
+
+    private NettyClientPool(String hostName, Integer port) {
+        this.hostName = hostName;
+        this.port = port;
     }
 
     /**
      * 构造函数
      *
-     * @param hostName        主机名称
-     * @param port            端口
-     * @param channelHandlers Handler
+     * @param hostName    主机名称
+     * @param port        端口
+     * @param collections Handler
      */
-    public NettyClientPool(String hostName, Integer port, List<ChannelHandler> channelHandlers) {
-        Map<String, ChannelHandler> mapHandler = Maps.newHashMap();
-        channelHandlers.forEach(channelHandler -> mapHandler.put(channelHandler.getClass().getName(), channelHandler));
-        create(hostName, port, mapHandler);
+    public NettyClientPool(String hostName, Integer port, Collection<ChannelHandler> collections) {
+        this(hostName, port);
+        create(collections);
     }
 
-    /**
-     * 构造函数
-     *
-     * @param hostName   主机名称
-     * @param port       端口
-     * @param mapHandler Handler
-     */
-    public NettyClientPool(String hostName, Integer port, Map<String, ChannelHandler> mapHandler) {
-        create(hostName, port, mapHandler);
-    }
-
-    public void create(String hostName, Integer port, Map<String, ChannelHandler> mapHandler) {
-
-        bootstrap.remoteAddress(hostName, port);
-
-        Map<String, ChannelHandler> mapChannelHandler = Maps.newHashMap();
-        mapChannelHandler.put("decoder", new PacketDecoder());
-        mapChannelHandler.put("encoder", new PacketEncoder());
-        mapChannelHandler.put("exceptionHandler", new ExceptionHandler());
-        Optional.ofNullable(mapHandler)
-            .ifPresent(channelHandlerMap -> channelHandlerMap.forEach(mapChannelHandler::put));
-        create0(bootstrap, mapChannelHandler);
+    private void create(Collection<ChannelHandler> collections) {
+        Bootstrap bootstrap = new Bootstrap();
+        bootstrap.group(new NioEventLoopGroup()).channel(NioSocketChannel.class)
+            .remoteAddress(this.hostName, this.port);
+        List<ChannelHandler> channelHandlers = Lists.newArrayList();
+        channelHandlers.add(new PacketDecoder());
+        channelHandlers.add(new PacketEncoder());
+        channelHandlers.add(new ExceptionHandler());
+        channelHandlers.addAll(Optional.ofNullable(collections).orElse(Collections.emptyList()));
+        create0(bootstrap, channelHandlers);
     }
 
     /**
@@ -85,7 +82,7 @@ public class NettyClientPool {
      *
      * @param bootstrap {@link Bootstrap}
      */
-    private void create0(@NonNull Bootstrap bootstrap, Map<String, ChannelHandler> mapChannelHandler) {
+    private void create0(@NonNull Bootstrap bootstrap, Collection<ChannelHandler> channelHandlers) {
         mapChannelPools = new AbstractChannelPoolMap<String, FixedChannelPool>() {
             @Override
             protected FixedChannelPool newPool(String key) {
@@ -107,8 +104,7 @@ public class NettyClientPool {
                     @Override
                     public void channelCreated(Channel ch) throws Exception {
                         ChannelPipeline pipeline = ch.pipeline();
-                        Optional.ofNullable(mapChannelHandler)
-                            .ifPresent(channelHandlerMap -> channelHandlerMap.forEach((pipeline::addLast)));
+                        Optional.ofNullable(channelHandlers).orElse(Collections.emptyList()).forEach(pipeline::addLast);
                     }
 
                     /**
@@ -138,12 +134,10 @@ public class NettyClientPool {
         // 从连接池中获取连接
         FixedChannelPool pool = mapChannelPools.get(key);
         // 申请连接，没有申请到或者网络断开，返回null
-        Future<Channel> acquire = pool.acquire();
-        acquire.addListener((FutureListener<Channel>) future -> {
+        pool.acquire().addListener((FutureListener<Channel>) future -> {
             //给服务端发送数据
             Channel channel = future.getNow();
             channel.writeAndFlush(message);
-            System.out.println(channel.id());
             // 连接放回连接池，这里一定记得放回去
             pool.release(channel);
         });
@@ -155,6 +149,6 @@ public class NettyClientPool {
      * @param message {@link BaseMessage}
      */
     public void sendMessage(@NonNull BaseMessage message) {
-        send("127.0.0.1", message);
+        send(String.format("%s:%s", this.hostName, this.port), message);
     }
 }

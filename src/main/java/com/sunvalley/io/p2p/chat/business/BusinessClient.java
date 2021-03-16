@@ -1,6 +1,6 @@
 package com.sunvalley.io.p2p.chat.business;
 
-import com.google.common.collect.Maps;
+import com.google.common.collect.Lists;
 import com.sunvalley.io.p2p.chat.GateWayClientChannelInitializer;
 import com.sunvalley.io.p2p.chat.NettyClientPool;
 import com.sunvalley.io.p2p.chat.utils.MessageUtils;
@@ -11,7 +11,7 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import java.net.InetSocketAddress;
-import java.util.Map;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -47,8 +47,8 @@ public class BusinessClient {
     }
 
     public static NettyClientPool getClientPool() {
-        Map<String, ChannelHandler> mapChannelHandler = Maps.newHashMap();
-        mapChannelHandler.put("businessInboundHandler", new BusinessClientInboundHandler());
-        return new NettyClientPool("127.0.0.1", 6668, mapChannelHandler);
+        List<ChannelHandler> channelHandlers = Lists.newArrayList();
+        channelHandlers.add(new BusinessClientInboundHandler());
+        return new NettyClientPool("127.0.0.1", 6668, channelHandlers);
     }
 }
