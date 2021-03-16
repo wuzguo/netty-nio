@@ -73,7 +73,7 @@ public class MessageUtils {
         }
 
         return MessageUtils
-            .to(BusinessMessage.builder().from(from.trim()).to(to.trim()).message(message.trim()).build(),
+            .to(BusinessMessage.builder().from(from.trim()).to(to.trim()).message(message.trim()).type(1).build(),
                 TypeEnum.BUSINESS.getValue());
     }
 }

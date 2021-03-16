@@ -1,6 +1,5 @@
 package com.sunvalley.io.p2p.chat.codec;
 
-import com.sunvalley.io.p2p.chat.entity.Message;
 import com.sunvalley.io.p2p.chat.utils.ObjectUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -15,10 +14,10 @@ import io.netty.handler.codec.MessageToByteEncoder;
  * @date 2021/3/15 11:23
  */
 
-public class PacketEncoder extends MessageToByteEncoder<Message> {
+public class PacketEncoder extends MessageToByteEncoder<Object> {
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, Message message, ByteBuf out) throws Exception {
+    protected void encode(ChannelHandlerContext ctx, Object message, ByteBuf out) throws Exception {
         // 将对象转换为byte
         byte[] bytes = ObjectUtils.objectToBytes(message);
         int length = bytes.length;
@@ -26,6 +25,5 @@ public class PacketEncoder extends MessageToByteEncoder<Message> {
         buf.writeInt(length);
         buf.writeBytes(bytes);
         out.writeBytes(buf);
-        System.out.println(String.format("send message length: %s, content: %s", length, message));
     }
 }

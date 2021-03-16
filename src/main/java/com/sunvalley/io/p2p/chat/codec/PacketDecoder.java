@@ -1,6 +1,5 @@
 package com.sunvalley.io.p2p.chat.codec;
 
-import com.sunvalley.io.p2p.chat.entity.Message;
 import com.sunvalley.io.p2p.chat.utils.ObjectUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -42,10 +41,8 @@ public class PacketDecoder extends ByteToMessageDecoder {
 
         try {
             byte[] body = byteBuf.array();
-
-            Message message = (Message) ObjectUtils.bytesToObject(body);
+            Object message = ObjectUtils.bytesToObject(body);
             out.add(message);
-            System.out.println(String.format("received Message length: %s, content: %s", length, message));
         } catch (Exception e) {
             System.out.println(ctx.channel().remoteAddress() + ",decode failed." + e.getMessage());
         }

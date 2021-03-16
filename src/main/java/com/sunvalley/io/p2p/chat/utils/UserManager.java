@@ -36,7 +36,7 @@ public class UserManager {
      */
     public static void add(@NonNull AuthMessage message) {
         User user = User.builder().id(IdUtils.idGen()).nickName(message.getNickName()).addr(message.getAddr())
-            .channelId(message.getChannelId()).loginTime(LocalDateTime.now()).status(false).build();
+            .channelId(message.getChannelId()).loginTime(LocalDateTime.now()).status(true).build();
         // 添加用户信息
         mapUsers.putIfAbsent(message.getNickName(), user);
     }

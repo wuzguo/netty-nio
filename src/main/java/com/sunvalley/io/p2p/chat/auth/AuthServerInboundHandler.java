@@ -33,6 +33,7 @@ public class AuthServerInboundHandler extends SimpleChannelInboundHandler<Messag
             businessPool.sendMessage(message);
             return;
         }
+
         AuthMessage authMessage = (AuthMessage) message.getMessage();
         if (UserManager.contains(authMessage.getNickName(), authMessage.getChannelId())) {
             ResultMessage message1 = ResultMessage.builder().to(authMessage.getChannelId())
@@ -42,6 +43,7 @@ public class AuthServerInboundHandler extends SimpleChannelInboundHandler<Messag
             ctx.channel().writeAndFlush(baseMessage);
             return;
         }
+
         String nikeNames = UserManager.getUsers(true).stream().map(User::getNickName).collect(Collectors.joining(", "));
         UserManager.add(authMessage);
 
@@ -50,7 +52,8 @@ public class AuthServerInboundHandler extends SimpleChannelInboundHandler<Messag
         ResultMessage resultMessage = ResultMessage.builder().to(authMessage.getChannelId())
             .type(TypeEnum.RESULT.getValue()).message(String.format("你好，%s，%s", authMessage.getNickName(), content))
             .build();
-        Message baseMessage = Message.builder().id(message.getId()).type(TypeEnum.RESULT.getValue()).message(resultMessage).build();
+        Message baseMessage = Message.builder().id(message.getId()).type(TypeEnum.RESULT.getValue())
+            .message(resultMessage).build();
         BusinessMessage message1 = BusinessMessage.builder().from(authMessage.getNickName())
             .channelId(authMessage.getChannelId()).type(0).build();
         message.setMessage(message1);
@@ -60,7 +63,7 @@ public class AuthServerInboundHandler extends SimpleChannelInboundHandler<Messag
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("客户端：" + ctx.channel().remoteAddress() + "连接");
+        //
     }
 
     @Override

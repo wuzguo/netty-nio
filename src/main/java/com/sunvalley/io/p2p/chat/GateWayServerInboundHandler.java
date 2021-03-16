@@ -25,32 +25,29 @@ public class GateWayServerInboundHandler extends SimpleChannelInboundHandler<Mes
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Message message) throws Exception {
-        System.out.println(ctx.channel() + ", " + ctx.channel().remoteAddress());
         // 返回消息直接写到客户端
         if (TypeEnum.RESULT.getValue().equals(message.getType())) {
             ResultMessage message1 = (ResultMessage) message.getMessage();
             Optional.ofNullable(ChannelUtils.getChannel(message1.getTo()))
-                .ifPresent(channel -> channel.channel().writeAndFlush(message1.getMessage()));
+                .ifPresent(channel -> channel.channel().writeAndFlush(message1));
             return;
         }
 
         // 记录通道消息
         ChannelUtils.addChannel(ctx);
-
         // 登录消息
         String content = String.valueOf(message.getMessage());
         if (content.contains("login")) {
             authClientPool.sendMessage(MessageUtils.toAuth(ctx.channel(), String.valueOf(message.getMessage())));
             return;
         }
-
         // 聊天消息
         authClientPool.sendMessage(MessageUtils.toBusiness(String.valueOf(message.getMessage())));
     }
 
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        //    UserManager.remove(ctx.channel());
+
     }
 
     @Override
