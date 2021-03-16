@@ -1,9 +1,12 @@
 package com.sunvalley.io.p2p.chat.entity;
 
-import com.sunvalley.io.p2p.chat.utils.IdUtils;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelId;
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * <B>说明：</B><BR>
@@ -14,6 +17,9 @@ import lombok.Data;
  */
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
 
     /**
@@ -29,7 +35,12 @@ public class User {
     /**
      * UID
      */
-    private Integer uid;
+    private Integer id;
+
+    /**
+     * 昵称
+     */
+    private String nickName;
 
     /**
      * 地址
@@ -39,17 +50,5 @@ public class User {
     /**
      * 通道
      */
-    private Channel channel;
-
-    /**
-     * 构造器
-     *
-     * @param addr    地址
-     * @param channel 通道
-     */
-    public User(String addr, Channel channel) {
-        this.addr = addr;
-        this.channel = channel;
-        this.uid = IdUtils.idGen();
-    }
+    private ChannelId channelId;
 }

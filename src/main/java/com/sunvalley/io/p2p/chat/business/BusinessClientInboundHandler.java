@@ -2,7 +2,7 @@ package com.sunvalley.io.p2p.chat.business;
 
 import com.sunvalley.io.p2p.chat.GateWayClient;
 import com.sunvalley.io.p2p.chat.NettyClientPool;
-import com.sunvalley.io.p2p.chat.entity.BaseMessage;
+import com.sunvalley.io.p2p.chat.entity.Message;
 import com.sunvalley.io.p2p.chat.enums.TypeEnum;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -15,13 +15,13 @@ import io.netty.channel.SimpleChannelInboundHandler;
  * @date 2021/3/9 11:50
  */
 
-public class BusinessClientInboundHandler extends SimpleChannelInboundHandler<BaseMessage> {
+public class BusinessClientInboundHandler extends SimpleChannelInboundHandler<Message> {
 
     // 认证客户端
     private static final NettyClientPool gateClientPool = GateWayClient.getPool();
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, BaseMessage message) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, Message message) throws Exception {
         System.out.println("business client message: " + message);
         message.setType(TypeEnum.RESULT.getValue());
         gateClientPool.sendMessage(message);

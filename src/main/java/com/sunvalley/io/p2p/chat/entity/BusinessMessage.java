@@ -1,6 +1,12 @@
 package com.sunvalley.io.p2p.chat.entity;
 
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelId;
+import java.io.Serializable;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * <B>说明：</B><BR>
@@ -11,20 +17,33 @@ import lombok.Data;
  */
 
 @Data
-public class BusinessMessage {
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class BusinessMessage implements Serializable {
 
     /**
-     * 接收接收用户ID
+     * 类型 0： 添加集合 1：发消息
      */
-    private Integer to;
+    private Integer type;
 
     /**
      * 发送用户ID
      */
-    private Integer from;
+    private String from;
+
+    /**
+     * 接收接收用户ID
+     */
+    private String to;
 
     /**
      * 消息体
      */
-    private Object msg;
+    private Object message;
+
+    /**
+     * 通道
+     */
+    private ChannelId channelId;
 }

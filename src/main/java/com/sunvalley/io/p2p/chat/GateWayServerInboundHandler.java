@@ -1,12 +1,14 @@
 package com.sunvalley.io.p2p.chat;
 
 import com.sunvalley.io.p2p.chat.auth.AuthClient;
-import com.sunvalley.io.p2p.chat.business.BusinessClient;
-import com.sunvalley.io.p2p.chat.entity.BaseMessage;
+import com.sunvalley.io.p2p.chat.entity.Message;
+import com.sunvalley.io.p2p.chat.entity.ResultMessage;
 import com.sunvalley.io.p2p.chat.enums.TypeEnum;
 import com.sunvalley.io.p2p.chat.utils.ChannelUtils;
+import com.sunvalley.io.p2p.chat.utils.MessageUtils;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import java.util.Optional;
 
 /**
  * <B>说明：</B><BR>
@@ -16,26 +18,34 @@ import io.netty.channel.SimpleChannelInboundHandler;
  * @date 2021/3/9 16:29
  */
 
-public class GateWayServerInboundHandler extends SimpleChannelInboundHandler<BaseMessage> {
+public class GateWayServerInboundHandler extends SimpleChannelInboundHandler<Message> {
 
     // 认证客户端
     private static final NettyClientPool authClientPool = AuthClient.getPool();
 
-    // 业务客户端
-    private static final NettyClientPool businessClientPool = BusinessClient.getPool();
-
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, BaseMessage message) throws Exception {
-        System.out.println(message);
-        if (message.getType().equals(TypeEnum.RESULT.getValue())) {
-            ChannelUtils.getChannel(message.getId()).writeAndFlush(message);
-        } else if (message.getType().equals(TypeEnum.BUSINESS.getValue())) {
-            ChannelUtils.addChannel(message.getId(), ctx.channel());
-            businessClientPool.sendMessage(message);
-        } else {
-            ChannelUtils.addChannel(message.getId(), ctx.channel());
-            authClientPool.sendMessage(message);
+    protected void channelRead0(ChannelHandlerContext ctx, Message message) throws Exception {
+        System.out.println(ctx.channel() + ", " + ctx.channel().remoteAddress());
+        // 返回消息直接写到客户端
+        if (TypeEnum.RESULT.getValue().equals(message.getType())) {
+            ResultMessage message1 = (ResultMessage) message.getMessage();
+            Optional.ofNullable(ChannelUtils.getChannel(message1.getTo()))
+                .ifPresent(channel -> channel.channel().writeAndFlush(message1.getMessage()));
+            return;
         }
+
+        // 记录通道消息
+        ChannelUtils.addChannel(ctx);
+
+        // 登录消息
+        String content = String.valueOf(message.getMessage());
+        if (content.contains("login")) {
+            authClientPool.sendMessage(MessageUtils.toAuth(ctx.channel(), String.valueOf(message.getMessage())));
+            return;
+        }
+
+        // 聊天消息
+        authClientPool.sendMessage(MessageUtils.toBusiness(String.valueOf(message.getMessage())));
     }
 
     @Override

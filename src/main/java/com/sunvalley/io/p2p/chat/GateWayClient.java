@@ -55,6 +55,7 @@ public class GateWayClient {
                 }
             });
             Channel channel = channelFuture.channel();
+            System.out.println(channel + " " + channel.remoteAddress());
             Scanner scanner = new Scanner(System.in);
 
             while (scanner.hasNextLine()) {

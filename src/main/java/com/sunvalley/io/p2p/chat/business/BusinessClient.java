@@ -53,12 +53,6 @@ public class BusinessClient {
                     System.out.println("连接服务器端口 6666 成功");
                 }
             });
-            Channel channel = channelFuture.channel();
-            Scanner scanner = new Scanner(System.in);
-
-            while (scanner.hasNextLine()) {
-                channel.writeAndFlush(MessageUtils.to(scanner.nextLine()));
-            }
         } finally {
             loopGroup.shutdownGracefully();
         }

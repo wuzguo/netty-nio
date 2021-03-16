@@ -1,15 +1,17 @@
 package com.sunvalley.io.p2p.chat.utils;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.sunvalley.io.p2p.chat.entity.AuthMessage;
 import com.sunvalley.io.p2p.chat.entity.User;
-import io.netty.channel.Channel;
+import io.netty.channel.ChannelId;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 
@@ -24,86 +26,72 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class UserManager {
 
-    // 记录当前在线的用户
-    private static final ConcurrentMap<Channel, User> mapChannels = Maps.newConcurrentMap();
+    private static final ConcurrentMap<String, User> mapUsers = Maps.newConcurrentMap();
 
-    // 配对
-    private static final ConcurrentMap<Channel, List<Integer>> mapChannelPartner = Maps.newConcurrentMap();
-
-    /**
-     * 添加伙伴
-     *
-     * @param channel 通道
-     * @param userId  用户ID
-     */
-    public static void addPartner(@NonNull Channel channel, @NonNull Integer userId) {
-        mapChannelPartner.getOrDefault(channel, Lists.newArrayList()).add(userId);
-    }
-
-    /**
-     * 获取当前用户的伙伴
-     *
-     * @param channel 通道
-     * @return {@link List}
-     */
-    public List<Channel> getPartners(Channel channel) {
-        List<Integer> userIds = mapChannelPartner.get(channel);
-        if (userIds == null || userIds.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<Channel> channels = Lists.newArrayList();
-        mapChannels.forEach((ch, user) -> {
-            if (userIds.contains(user.getUid())) {
-                channels.add(ch);
-            }
-        });
-        return channels;
-    }
 
     /**
      * 添加用户
      *
-     * @param channel 通道
-     * @param addr    地址
-     * @return {@link Integer} 用户ID
+     * @param message {@link AuthMessage} 消息
      */
-    public static Integer add(@NonNull Channel channel, @NonNull String addr) {
-        Integer userId = IdUtils.idGen();
-        User user = new User(addr, channel);
-        mapChannels.putIfAbsent(channel, user);
-        return userId;
+    public static void add(@NonNull AuthMessage message) {
+        User user = User.builder().id(IdUtils.idGen()).nickName(message.getNickName()).addr(message.getAddr())
+            .channelId(message.getChannelId()).loginTime(LocalDateTime.now()).status(false).build();
+        // 添加用户信息
+        mapUsers.putIfAbsent(message.getNickName(), user);
     }
+
+    /**
+     * 判断用户是不是存在
+     *
+     * @param nickName 昵称
+     * @return {@link Boolean} 不存在
+     */
+    public static Boolean contains(@NonNull String nickName, @NonNull ChannelId channelId) {
+        User user = mapUsers.get(nickName);
+        return !(Objects.isNull(user) || user.getChannelId().equals(channelId));
+    }
+
 
     /**
      * 设置用户在线
      *
-     * @param channel 管道
+     * @param channelId 管道
      */
-    public static void online(@NonNull Channel channel) {
-        Optional.of(mapChannels.get(channel)).ifPresent(user -> {
-            user.setLoginTime(LocalDateTime.now());
-            user.setStatus(true);
+    public static void online(@NonNull ChannelId channelId) {
+        mapUsers.forEach((nickName, user) -> {
+            if (user.getChannelId().equals(channelId)) {
+                user.setStatus(true);
+            }
         });
     }
 
     /**
      * 设置用户离线
      *
-     * @param channel 管道
+     * @param channelId 管道
      */
-    public static void offline(@NonNull Channel channel) {
-        Optional.of(mapChannels.get(channel)).ifPresent(user -> user.setStatus(false));
+    public static void offline(@NonNull ChannelId channelId) {
+        mapUsers.forEach((nickName, user) -> {
+            if (user.getChannelId().equals(channelId)) {
+                user.setStatus(false);
+            }
+        });
     }
 
     /**
      * 移除
      *
-     * @param channel 管道
+     * @param channelId 管道
      */
-    public static void remove(@NonNull Channel channel) {
-        Optional.of(mapChannels.get(channel)).ifPresent(user -> user.setStatus(false));
-        mapChannels.remove(channel);
+    public static void remove(@NonNull ChannelId channelId) {
+        for (Iterator<Entry<String, User>> it = mapUsers.entrySet().iterator(); it.hasNext(); ) {
+            Entry<String, User> item = it.next();
+            if (item.getValue().getChannelId() == channelId) {
+                it.remove();
+                break;
+            }
+        }
     }
 
 
@@ -112,7 +100,7 @@ public class UserManager {
      *
      * @return {@link Map}
      */
-    public static Map<Channel, User> getChannels() {
-        return mapChannels;
+    public static Collection<User> getUsers(Boolean status) {
+        return mapUsers.values().stream().filter(user -> status.equals(user.getStatus())).collect(Collectors.toList());
     }
 }

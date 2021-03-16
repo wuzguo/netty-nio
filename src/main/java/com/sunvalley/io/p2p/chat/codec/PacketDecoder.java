@@ -1,7 +1,7 @@
 package com.sunvalley.io.p2p.chat.codec;
 
-import com.alibaba.fastjson.JSON;
-import com.sunvalley.io.p2p.chat.entity.BaseMessage;
+import com.sunvalley.io.p2p.chat.entity.Message;
+import com.sunvalley.io.p2p.chat.utils.ObjectUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
@@ -36,20 +36,16 @@ public class PacketDecoder extends ByteToMessageDecoder {
             return;
         }
 
-//        if (length > in.readableBytes() - 4) {
-//            in.resetReaderIndex();
-//            return;
-//        }
-
         ByteBuf byteBuf = Unpooled.buffer(length);
 
         in.readBytes(byteBuf);
 
         try {
             byte[] body = byteBuf.array();
-            BaseMessage message = JSON.parseObject(new String(body), BaseMessage.class);
+
+            Message message = (Message) ObjectUtils.bytesToObject(body);
             out.add(message);
-            System.out.println(String.format("received Message length: %s, content: %s", length, JSON.toJSON(message)));
+            System.out.println(String.format("received Message length: %s, content: %s", length, message));
         } catch (Exception e) {
             System.out.println(ctx.channel().remoteAddress() + ",decode failed." + e.getMessage());
         }

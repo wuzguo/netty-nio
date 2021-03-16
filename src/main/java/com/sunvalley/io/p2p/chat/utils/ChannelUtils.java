@@ -2,6 +2,9 @@ package com.sunvalley.io.p2p.chat.utils;
 
 import com.google.common.collect.Maps;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelId;
+import java.util.Collection;
 import java.util.Map;
 import lombok.experimental.UtilityClass;
 
@@ -19,18 +22,37 @@ public class ChannelUtils {
     /**
      * 缓存Map
      */
-    private static final Map<String, Channel> mapChannel = Maps.newConcurrentMap();
+    private static final Map<ChannelId, ChannelHandlerContext> mapChannels = Maps.newConcurrentMap();
 
-
-    public static void addChannel(String id, Channel channel) {
-        mapChannel.put(id, channel);
+    /**
+     * 增加Channel
+     *
+     * @param context 通道
+     */
+    public static void addChannel(ChannelHandlerContext context) {
+        mapChannels.put(context.channel().id(), context);
     }
 
-    public static Channel getChannel(String id) {
-        return mapChannel.get(id);
+    /**
+     * 获取通道
+     *
+     * @param channelId ChannelId
+     * @return {@link Channel}
+     */
+    public static ChannelHandlerContext getChannel(ChannelId channelId) {
+        return mapChannels.get(channelId);
     }
 
-    public static void remove(String id) {
-        mapChannel.remove(id);
+    /**
+     * 移除通道
+     *
+     * @param channelId ChannelId
+     */
+    public static void remove(ChannelId channelId) {
+        mapChannels.remove(channelId);
+    }
+
+    public static Collection<ChannelHandlerContext> getChannels() {
+        return mapChannels.values();
     }
 }

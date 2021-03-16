@@ -23,6 +23,6 @@ public class GateWayClientChannelInitializer extends ChannelInitializer<SocketCh
         pipeline.addLast("decoder", new PacketDecoder());
         pipeline.addLast("encoder", new PacketEncoder());
         pipeline.addLast("exceptionHandler", new ExceptionHandler());
-        pipeline.addLast("gatewayClientHandler", new GateWayClientInboundHandler());
+        pipeline.addLast("gateWayClientHandler", new GateWayClientInboundHandler());
     }
 }

@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.sunvalley.io.netty.ExceptionHandler;
 import com.sunvalley.io.p2p.chat.codec.PacketDecoder;
 import com.sunvalley.io.p2p.chat.codec.PacketEncoder;
-import com.sunvalley.io.p2p.chat.entity.BaseMessage;
+import com.sunvalley.io.p2p.chat.entity.Message;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
@@ -147,9 +147,9 @@ public class NettyClientPool {
     /**
      * 发送消息
      *
-     * @param message {@link BaseMessage}
+     * @param message {@link Message}
      */
-    public void sendMessage(@NonNull BaseMessage message) {
+    public void sendMessage(@NonNull Message message) {
         this.send(String.format("%s:%s", this.hostName, this.port), message);
     }
 }

@@ -1,6 +1,12 @@
 package com.sunvalley.io.p2p.chat.entity;
 
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelId;
+import java.io.Serializable;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * <B>说明：</B><BR>
@@ -10,11 +16,24 @@ import lombok.Data;
  * @date 2021/3/15 10:16
  */
 
-public class AuthMessage extends BaseMessage {
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class AuthMessage implements Serializable {
 
-    private Object msg;
+    /**
+     * 昵称
+     */
+    private String nickName;
 
-    AuthMessage(String id, Integer type, Object message) {
-        super(id, type, message);
-    }
+    /**
+     * 用户地址
+     */
+    private String addr;
+
+    /**
+     * 端口号
+     */
+    private ChannelId channelId;
 }

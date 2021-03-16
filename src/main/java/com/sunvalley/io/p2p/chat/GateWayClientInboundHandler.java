@@ -1,6 +1,6 @@
 package com.sunvalley.io.p2p.chat;
 
-import com.sunvalley.io.p2p.chat.entity.BaseMessage;
+import com.sunvalley.io.p2p.chat.entity.Message;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
@@ -12,10 +12,10 @@ import io.netty.channel.SimpleChannelInboundHandler;
  * @date 2021/3/9 16:29
  */
 
-public class GateWayClientInboundHandler extends SimpleChannelInboundHandler<BaseMessage> {
+public class GateWayClientInboundHandler extends SimpleChannelInboundHandler<Message> {
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, BaseMessage message) throws Exception {
-        System.out.println("gateway: " + message.toString());
+    protected void channelRead0(ChannelHandlerContext ctx, Message message) throws Exception {
+        System.out.println("xxxxxxxxxxxxxx:" + message);
     }
 }
