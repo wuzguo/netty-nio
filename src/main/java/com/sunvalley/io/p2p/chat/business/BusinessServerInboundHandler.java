@@ -22,14 +22,19 @@ public class BusinessServerInboundHandler extends SimpleChannelInboundHandler<Ba
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, BaseMessage message) throws Exception {
         System.out.println("business server message: " + message);
-        // 如果接收对象是空就群发消息
-        if (UserManager.getPartners(ctx.channel()).isEmpty()) {
-            this.sendGroupMessage(ctx.channel(), null);
-            return;
-        }
 
-        Optional.ofNullable(UserManager.getPartners(ctx.channel()))
-            .ifPresent(channels -> channels.forEach(channel -> channel.writeAndFlush(message)));
+        BaseMessage baseMessage = BaseMessage.builder().id(message.getId()).type(message.getType())
+            .message("你好，我是业务服务器").build();
+        ctx.channel().writeAndFlush(baseMessage);
+
+//        // 如果接收对象是空就群发消息
+//        if (UserManager.getPartners(ctx.channel()).isEmpty()) {
+//            this.sendGroupMessage(ctx.channel(), null);
+//            return;
+//        }
+//
+//        Optional.ofNullable(UserManager.getPartners(ctx.channel()))
+//            .ifPresent(channels -> channels.forEach(channel -> channel.writeAndFlush(message)));
     }
 
     /**
