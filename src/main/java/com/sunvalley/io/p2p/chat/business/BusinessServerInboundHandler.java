@@ -1,5 +1,6 @@
 package com.sunvalley.io.p2p.chat.business;
 
+import com.sunvalley.io.p2p.chat.entity.BaseMessage;
 import com.sunvalley.io.p2p.chat.utils.UserManager;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -15,14 +16,15 @@ import lombok.NonNull;
  * @date 2021/3/9 11:50
  */
 
-public class BusinessServerInboundHandler extends SimpleChannelInboundHandler<String> {
+public class BusinessServerInboundHandler extends SimpleChannelInboundHandler<BaseMessage> {
 
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, String message) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, BaseMessage message) throws Exception {
+        System.out.println("business server message: " + message);
         // 如果接收对象是空就群发消息
         if (UserManager.getPartners(ctx.channel()).isEmpty()) {
-            this.sendGroupMessage(ctx.channel(), message);
+            this.sendGroupMessage(ctx.channel(), null);
             return;
         }
 

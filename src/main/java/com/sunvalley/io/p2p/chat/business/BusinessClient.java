@@ -28,7 +28,7 @@ public class BusinessClient {
         NioEventLoopGroup loopGroup = new NioEventLoopGroup(8);
         Bootstrap bootstrap = new Bootstrap();
         try {
-            bootstrap.group(loopGroup).channel(NioSocketChannel.class).handler(new GateWayClientChannelInitializer());
+            bootstrap.group(loopGroup).channel(NioSocketChannel.class).handler(new BusinessClientChannelInitializer());
             ChannelFuture channelFuture = bootstrap.connect(new InetSocketAddress("127.0.0.1", 6668)).sync();
             channelFuture.addListener(future -> {
                 if (future.isSuccess()) {
@@ -39,7 +39,7 @@ public class BusinessClient {
             Scanner scanner = new Scanner(System.in);
 
             while (scanner.hasNextLine()) {
-                channel.writeAndFlush(MessageUtils.to(scanner.nextLine() + "\r\n"));
+                channel.writeAndFlush(MessageUtils.to(scanner.nextLine()));
             }
         } finally {
             loopGroup.shutdownGracefully();

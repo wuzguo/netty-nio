@@ -40,12 +40,12 @@ public class NettyClientPool {
     /**
      * 主机名称
      */
-    private String hostName;
+    private final String hostName;
 
     /**
      * 端口
      */
-    private Integer port;
+    private final Integer port;
 
 
     private NettyClientPool(String hostName, Integer port) {
@@ -70,6 +70,7 @@ public class NettyClientPool {
         bootstrap.group(new NioEventLoopGroup()).channel(NioSocketChannel.class)
             .remoteAddress(this.hostName, this.port);
         List<ChannelHandler> channelHandlers = Lists.newArrayList();
+        // 各种Handler
         channelHandlers.add(new PacketDecoder());
         channelHandlers.add(new PacketEncoder());
         channelHandlers.add(new ExceptionHandler());
@@ -149,6 +150,6 @@ public class NettyClientPool {
      * @param message {@link BaseMessage}
      */
     public void sendMessage(@NonNull BaseMessage message) {
-        send(String.format("%s:%s", this.hostName, this.port), message);
+        this.send(String.format("%s:%s", this.hostName, this.port), message);
     }
 }

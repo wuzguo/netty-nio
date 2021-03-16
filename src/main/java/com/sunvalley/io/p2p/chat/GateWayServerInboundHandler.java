@@ -19,7 +19,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 public class GateWayServerInboundHandler extends SimpleChannelInboundHandler<BaseMessage> {
 
     // 认证客户端
-    private static final NettyClientPool authClientPool = AuthClient.getClientPool();
+    private static final NettyClientPool authClientPool = AuthClient.getPool();
 
     // 业务客户端
     private static final NettyClientPool businessClientPool = BusinessClient.getClientPool();

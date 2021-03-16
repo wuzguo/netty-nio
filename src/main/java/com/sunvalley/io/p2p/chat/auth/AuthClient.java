@@ -31,7 +31,7 @@ public class AuthClient {
         NioEventLoopGroup loopGroup = new NioEventLoopGroup(8);
         Bootstrap bootstrap = new Bootstrap();
         try {
-            bootstrap.group(loopGroup).channel(NioSocketChannel.class).handler(new GateWayClientChannelInitializer());
+            bootstrap.group(loopGroup).channel(NioSocketChannel.class).handler(new AuthClientChannelInitializer());
             ChannelFuture channelFuture = bootstrap.connect(new InetSocketAddress("127.0.0.1", 6670)).sync();
             channelFuture.addListener(future -> {
                 if (future.isSuccess()) {
@@ -42,14 +42,14 @@ public class AuthClient {
             Scanner scanner = new Scanner(System.in);
 
             while (scanner.hasNextLine()) {
-                channel.writeAndFlush(MessageUtils.to(scanner.nextLine() + "\r\n"));
+                channel.writeAndFlush(MessageUtils.to(scanner.nextLine()));
             }
         } finally {
             loopGroup.shutdownGracefully();
         }
     }
 
-    public static NettyClientPool getClientPool() {
+    public static NettyClientPool getPool() {
         List<ChannelHandler> channelHandlers = Lists.newArrayList();
         channelHandlers.add(new AuthClientInboundHandler());
         return new NettyClientPool("127.0.0.1", 6670, channelHandlers);
