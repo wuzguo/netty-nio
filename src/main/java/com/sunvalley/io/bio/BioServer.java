@@ -9,6 +9,9 @@ import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class BioServer {
 
@@ -17,7 +20,8 @@ public class BioServer {
         ServerSocket serverSocket = new ServerSocket();
         serverSocket.bind(address);
 
-        ExecutorService cacheThreadPool = Executors.newCachedThreadPool();
+        ExecutorService cacheThreadPool = new ThreadPoolExecutor(4, 8, 60L, TimeUnit.SECONDS,
+            new SynchronousQueue<>(), Executors.defaultThreadFactory(), new ThreadPoolExecutor.AbortPolicy());
 
         while (true) {
             Socket socket = serverSocket.accept();
